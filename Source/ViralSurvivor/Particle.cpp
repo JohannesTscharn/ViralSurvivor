@@ -36,10 +36,7 @@ AParticle::AParticle()
 	// Initialized in Constructor to keep it Constant and unique to each Particle - increases randomness
 	IndRndModi = FMath::RandRange(0.5f, 1.5f);
 
-	if (RandRangeF(0.0f, 1.0f) > 0.65f)
-		CorrectType = true;
-	else
-		CorrectType = false;
+
 
 	// --------------------------------- EXPERIMENTAL / DISCARDED  ---------------------------------
 
@@ -72,7 +69,16 @@ void AParticle::BeginPlay()
 		MinRndScale = Trigger->TMinRndScale;
 		MaxRndScale = Trigger->TMaxRndScale;
 	}
-	RndScale = RandRangeF(MinRndScale, MaxRndScale);
+
+	float rndType = RandRangeF(0.0f, 1.0f);
+	if (rndType > 0.25f)
+		CorrectType = true;
+
+	if (!CorrectType)
+		RndScale = RandRangeF(MinRndScale, MaxRndScale);
+	else
+		RndScale = RandRangeF(MinRndScale / 2, MaxRndScale / 2);
+
 
 } // END BEGIN PLAY
 //-------------------------------------------------------------------------------------------------------------------------
@@ -115,7 +121,7 @@ void AParticle::Tick(float DeltaTime)
 		if (!LockedToVirus)
 			AttractionForce = Trigger->TAttractionForce;
 		else 
-			AttractionForce = 15.f;
+			AttractionForce = 2.5f;
 
 		AttractionRange = Trigger->TAttractionRange;
 
@@ -150,13 +156,13 @@ void AParticle::Tick(float DeltaTime)
 				TargetPos = TriggerPos;
 			}
 			// Ensure Target Pos is AttrSourcePos once "Grabbed"
-			if (TargetPos != StartPos && TriggerDist > 5.0f)
+			if (TargetPos != StartPos && TriggerDist > 75.0f)
 			{
-				if (TriggerDist > 5.0f)
+				if (TriggerDist > 75.0f)
 				{
 					TargetPos = TriggerPos;
 				}
-				if (TriggerDist <= 125.f)
+				if (TriggerDist <= 100.f)
 				{
 					// Type Check
 					if (!CorrectType)
@@ -292,7 +298,7 @@ void AParticle::Tick(float DeltaTime)
 
 
 			// Set Size to Nomal Value
-			FVector StartSize {(MinRndScale / 3) * 2, (MinRndScale / 3) * 2, (MinRndScale / 3) * 2};
+			FVector StartSize {(MinRndScale / 3), (MinRndScale / 3), (MinRndScale / 3)};
 			SetActorScale3D(StartSize);
 
 	}

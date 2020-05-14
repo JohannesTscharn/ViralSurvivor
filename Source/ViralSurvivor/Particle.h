@@ -39,7 +39,7 @@ public:
 
 	// Type Specifier
 	UPROPERTY()
-	bool CorrectType;
+	bool CorrectType = false;
 	UPROPERTY()
 	bool Mismatch = false;
 	UPROPERTY()
