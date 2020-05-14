@@ -30,6 +30,7 @@ public:
 	// Mesh
 	UPROPERTY()
 	USceneComponent* Root;
+	
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
 

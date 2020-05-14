@@ -36,7 +36,14 @@ public:
 	// Persistent individual universal Particle Modifier 
 	UPROPERTY()
 	float IndRndModi;
-	
+
+	// Type Specifier
+	UPROPERTY()
+	bool CorrectType;
+	UPROPERTY()
+	bool Mismatch = false;
+	UPROPERTY()
+	bool LockedToVirus = false;
 
 
 	// ACTIVATION
@@ -136,6 +143,8 @@ public:
 	class UMaterial* MaterialA;
 	UPROPERTY(EditAnywhere)
 	class UMaterial* MaterialB;
+	UPROPERTY(EditAnywhere)
+	class UMaterial* MaterialC;
 
 ///----------------------------------------------------------------------------------------------------------------------------
 

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "Math/UnrealMathUtility.h"
 #include "Particle.h"
@@ -30,12 +28,18 @@ AParticle::AParticle()
 	// Material
 	MaterialA = CreateDefaultSubobject<UMaterial>(TEXT("MaterialA"));
 	MaterialB = CreateDefaultSubobject<UMaterial>(TEXT("Material"));
+	MaterialC = CreateDefaultSubobject<UMaterial>(TEXT("MaterialB"));
 
 
 	// Persistent individual universal Particle Modifier 
 	// used for weighting multiple parameters like Attraction Force: +-50%
 	// Initialized in Constructor to keep it Constant and unique to each Particle - increases randomness
 	IndRndModi = FMath::RandRange(0.5f, 1.5f);
+
+	if (RandRangeF(0.0f, 1.0f) > 0.65f)
+		CorrectType = true;
+	else
+		CorrectType = false;
 
 	// --------------------------------- EXPERIMENTAL / DISCARDED  ---------------------------------
 
@@ -107,7 +111,12 @@ void AParticle::Tick(float DeltaTime)
 
 		// Set Particle Variables as specified by User in Trigger
 		maxRndMovementDist = Trigger->TmaxRndMovementDist;
-		AttractionForce = Trigger->TAttractionForce;
+
+		if (!LockedToVirus)
+			AttractionForce = Trigger->TAttractionForce;
+		else 
+			AttractionForce = 15.f;
+
 		AttractionRange = Trigger->TAttractionRange;
 
 
@@ -132,7 +141,7 @@ void AParticle::Tick(float DeltaTime)
 	if (TickCounter >= RandRangeF(15, 35)){
 		
 		// Set TargetPosition to Initial (Start) Position by Default
-		if (TriggerActivated)
+		if (TriggerActivated && !Mismatch)
 		{
 			if (TriggerDist < AttractionRange * IndRndModi && TriggerDist > 5.0f)
 			{
@@ -142,7 +151,27 @@ void AParticle::Tick(float DeltaTime)
 			}
 			// Ensure Target Pos is AttrSourcePos once "Grabbed"
 			if (TargetPos != StartPos && TriggerDist > 5.0f)
-				TargetPos = TriggerPos;
+			{
+				if (TriggerDist > 5.0f)
+				{
+					TargetPos = TriggerPos;
+				}
+				if (TriggerDist <= 125.f)
+				{
+					// Type Check
+					if (!CorrectType)
+					{
+						TargetPos = StartPos;
+						Mismatch = true;
+					}
+					else
+					{
+						TargetPos = TriggerPos;
+						LockedToVirus = true;
+					}
+					
+				}
+			}
 			
 			if (TargetPos == TriggerPos)
 				Activated = true;
@@ -248,22 +277,35 @@ void AParticle::Tick(float DeltaTime)
 
 // Update Material 
 //-------------------------------------------------------------------------------------------------------------------------
+	if (!CorrectType)
+	{
+			Mesh->SetMaterial(0, MaterialC);
+	}
 	if (Activated)
 	{
 		// Update Material 
-		if (MaterialA != nullptr && MaterialB != nullptr)
+		if (MaterialA != nullptr && MaterialB != nullptr && MaterialC != nullptr)
+		{
 			Mesh->SetMaterial(0, MaterialB);
 
+		}
+
+
 			// Set Size to Nomal Value
-			FVector StartSize {RndScale, RndScale, RndScale};
+			FVector StartSize {(MinRndScale / 3) * 2, (MinRndScale / 3) * 2, (MinRndScale / 3) * 2};
 			SetActorScale3D(StartSize);
 
 	}
 	else
 	{
 		// Update Material 
-		if (MaterialA != nullptr && MaterialB != nullptr)
-			Mesh->SetMaterial(0, MaterialA);
+		if (MaterialA != nullptr && MaterialB != nullptr && MaterialC != nullptr)
+		{
+			if (CorrectType)
+				Mesh->SetMaterial(0, MaterialA);
+			else 
+				Mesh->SetMaterial(0, MaterialC);
+		}
 		FVector DeactivateScale {MinRndScale / 2, MinRndScale / 2, MinRndScale / 2};
 		SetActorScale3D(DeactivateScale);
 
