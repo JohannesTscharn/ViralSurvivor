@@ -1,7 +1,6 @@
 
-#include "Particle.h"
 #include "Math/UnrealMathUtility.h"
-
+#include "Particle.h"
 
 //-------------------------------------------------------------------------------------------------------------------------
 // -- CONSTRUCTOR --
