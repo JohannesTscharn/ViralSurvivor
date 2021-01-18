@@ -27,5 +27,9 @@
 			"Name": "ControlRig",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Android",
+		"WindowsNoEditor"
 	]
 }
